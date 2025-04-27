@@ -37,12 +37,11 @@ public class MyHashTable<K, V> {
         int hash = hash(key);
         HashNode<K, V> head = chainArray[hash];
         if(head != null){
-            if (head.key == key){
+            if (head.key.equals(key)){
                 head.value = value;
                 return;
             }
             head = head.next;
-
         }
 
         HashNode<K, V> newNode = new HashNode<>(key, value);
@@ -54,7 +53,7 @@ public class MyHashTable<K, V> {
     public V get(K key){
         HashNode<K, V> head = chainArray[hash(key)];
         while(head != null){
-            if(head.key == key)
+            if(head.key.equals(key))
                 return head.value;
             head = head.next;
         }
@@ -86,7 +85,7 @@ public class MyHashTable<K, V> {
     public boolean contains(V value){
         for (HashNode<K, V> head : chainArray) {
             while (head != null) {
-                if (head.value == value)
+                if (head.value.equals(value))
                     return true;
                 head = head.next;
             }
@@ -97,12 +96,26 @@ public class MyHashTable<K, V> {
     public K getKey(V value){
         for (HashNode<K, V> head : chainArray) {
             while (head != null) {
-                if (head.value == value)
+                if (head.value.equals(value))
                     return head.key;
                 head = head.next;
             }
         }
         return null;
+    }
+
+    public int getNumberOfBuckets(){
+        return M;
+    }
+
+    public int getBucketSize(int index){
+        int size = 0;
+        HashNode<K, V> head = chainArray[index];
+        while(head != null){
+            size++;
+            head = head.next;
+        }
+        return size;
     }
 }
 
