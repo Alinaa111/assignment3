@@ -9,6 +9,15 @@ public class Main {
 
         printCountsOfBucket(table);
 
+
+        BST<Integer, String> bst = new BST<>();
+        bst.put(1, "Student1");
+        bst.put(2, "Student2");
+        bst.put(3, "Student3");
+
+        for (var elem : bst) {
+            System.out.println("key: " + elem.getKey() + ", value: " + elem.getVal());
+        }
     }
 
     public static void printCountsOfBucket(MyHashTable<MyTestingClass, Student> table){

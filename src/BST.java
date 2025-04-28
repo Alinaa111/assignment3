@@ -1,7 +1,10 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 
-public class BST<K extends Comparable<K>, V> {
+public class BST<K extends Comparable<K>, V> implements Iterable<BST.Entry<K,V>> {
     private Node root;
+    private int size = 0;
 
     private class Node {
         private K key;
@@ -13,9 +16,28 @@ public class BST<K extends Comparable<K>, V> {
         }
     }
 
+    public static class Entry<K, V>{
+        private final K key;
+        private final V val;
+
+        public Entry(K key, V val){
+            this.key = key;
+            this.val = val;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getVal() {
+            return val;
+        }
+    }
+
     public void put(K key, V val){
         if (root == null){
             root = new Node(key, val);
+            size++;
             return;
         }
 
@@ -25,6 +47,7 @@ public class BST<K extends Comparable<K>, V> {
             if (cmp < 0){
                 if (current.left == null){
                     current.left = new Node(key, val);
+                    size++;
                     return;
                 }
                 current = current.left;
@@ -32,6 +55,7 @@ public class BST<K extends Comparable<K>, V> {
             else if (cmp > 0){
                 if (current.right == null){
                     current.right = new Node(key, val);
+                    size++;
                     return;
                 }
                 current = current.right;
@@ -62,6 +86,7 @@ public class BST<K extends Comparable<K>, V> {
 
     public void delete(K key){
         root = delete(root, key);
+        size--;
     }
 
     private Node delete(Node root, K key){
@@ -124,21 +149,42 @@ public class BST<K extends Comparable<K>, V> {
         return root;
     }
 
-    public Iterable<K> iterator(){
-        Stack<Node> stack = new Stack<>();
-        Stack<K> keys = new Stack<>();
-        Node current = root;
+    public Iterator<Entry<K, V>> iterator(){
+        return new BSTIterator();
+    }
 
-        while (current != null || !stack.isEmpty()) {
-            while (current != null) {
-                stack.push(current);
-                current = current.left;
-            }
-            current = stack.pop();
-            keys.push(current.key);
-            current = current.right;
+    private class BSTIterator implements Iterator<Entry<K, V>>{
+        private Stack<Node> stack = new Stack<>();
+
+        public BSTIterator(){
+            pushLeft(root);
         }
 
-        return keys;
+        private void pushLeft(Node node){
+            while (node != null){
+                stack.push(node);
+                node = node.left;
+            }
+        }
+
+        @Override
+        public boolean hasNext(){
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public Entry<K, V> next(){
+            if (!hasNext()) throw new NoSuchElementException();
+            Node current = stack.pop();
+            Entry<K, V> entry = new Entry<>(current.key, current.val);
+            if (current.right != null){
+                pushLeft(current.right);
+            }
+            return entry;
+        }
+    }
+
+    public int size(){
+        return size;
     }
 }
